@@ -1,0 +1,49 @@
+---
+title: "basic test"
+author: "Mark"
+date: "03/03/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(r2d3)
+library(dplyr)
+library(jsonlite)
+```
+
+## This should be the plot
+```{r something_here, echo=FALSE}
+
+fn_to_json <- function(d) jsonlite::toJSON(d, dataframe = "rows")
+
+vct_g <- c("A", "B", "C", "E") 
+vct_v <- c("V1", "V2", "V3", "mark the koala climbs up trees") 
+
+vct_group <- vct_g  %>% rep(times = 4)
+vct_variable <- vct_v %>% rep(each = 4)
+vct_val <- c(56, 20, 90, 23, 95, 83, 45, 78, 7, 67, 32, 67, 43, 74, 22, 86)
+df_hm_data <- data.frame(group = vct_group, 
+          variable = vct_variable, value = vct_val)
+
+# so the variables seem as though they are just displayed in the order they
+# are presented.
+df_hm_data <- df_hm_data %>% arrange(desc(group))
+
+
+lst_data <- list(data = df_hm_data, group = vct_g, variable =  vct_v)
+
+r2d3(data = fn_to_json(lst_data), script = "mark_test.js",  d3_version = "4")
+# r2d3(data=c(0.3, 0.6, 0.8, 0.95, 0.40, 0.20), script = "mark_test.js")
+```
+
+
+
+
+
+
+
+
+
+
+
