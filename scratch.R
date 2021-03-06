@@ -25,3 +25,40 @@ df_hm_data <- df_hm_data %>% arrange(desc(group))
 
 lst_data <- list(data = df_hm_data, group = c("A", "B", "C", "E"), 
      variable =  c("V1", "V2", "V3", "v4"))
+
+
+int_num_elements <- 4
+vct_digits <- runif(int_num_elements, min = 7, max = 55) %>% round(digits = 0)
+str_title <- "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod"
+vct_z <- sapply(vct_digits, function(x) substr(str_title, 1, x))
+
+vct_variable <- vct_z  %>% rep(times = int_num_elements)
+vct_value <- runif(int_num_elements ^ 2, min = 1, max = 100) %>% round(digits = 0)
+df_hm_data <- data.frame(group = vct_variable, 
+                         variable = vct_variable, value = vct_value)
+lst_data <- list(data = df_hm_data, group = vct_z, variable =  vct_z)
+
+
+
+
+
+
+
+int_num_elements <- 30
+
+vct_str_length <- sample(7:55, int_num_elements, replace = TRUE)
+vct_z <- stri_rand_strings(int_num_elements, vct_str_length) 
+vct_z[1] <- "mark the koala climbs up trees"
+
+
+(vct_z %>% unique() %>% length()) == int_num_elements
+
+
+
+
+
+
+
+
+
+
