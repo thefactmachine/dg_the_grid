@@ -1,16 +1,20 @@
 
 // set the dimensions and margins of the graph
 
+var square_dimensions = 1060;
+var margin_top_bottom = 300;
+
 // from 260 to 170
-var margin = {top: 0, right: 0, bottom: 260, left: 210},
-  width = 910 - margin.left - margin.right,
-  height = 910 - margin.top - margin.bottom;
+var margin = {top: 0, right: 0, 
+  bottom: margin_top_bottom, left: margin_top_bottom},
+  width = square_dimensions - margin.left - margin.right,
+  height = square_dimensions - margin.top - margin.bottom;
 
 // ====================================================================
 // globals
-var flt_padding = 0.1;
+var flt_padding = 0.06;
 var str_label_color = "grey";
-var int_rounding_factor = 1;
+var int_rounding_factor = 0.1;
 var int_font_size = 8;
 // ====================================================================
 
@@ -32,9 +36,13 @@ var plot_data = data["data"]
 var lbl_to_x = data["lbl_to_x"]
 var lbl_from_y = data["lbl_from_y"]
 
+var int_size = d3.set(lbl_to_x).size();
+var flt_cell_size_x = width / int_size;
+var flt_cell_size_y = height / int_size;
 
 // ====================================================================
 // Build X scales and axis:
+// padding is a proportion of total width
 var x_to = d3.scaleBand()
   .range([ 0, width ])
   .domain(lbl_to_x)
@@ -74,7 +82,7 @@ var y_axis_group = group_container.append("g")
 var y_axis_tick_group = y_axis_group.call(d3.axisLeft(y_from).tickSize(0))
 
 y_axis_tick_group.selectAll("text")
-  .attr("dx", "-1em")
+  .attr("dx", "-10px")
   // centre text horizontally
   .attr("dy", ".2em")
   .style("fill", str_label_color)
@@ -106,13 +114,58 @@ var d_color = d3.scaleLinear()
 
 
 function fn_sub_chart_pos(x_raw, y_raw) {
-    var x_fin = x_raw > 370 ? x_raw - 280: x_raw;
-    var y_fin = y_raw > 350 ? y_raw - 180: y_raw;
-   sub_graph_container.attr("transform", "translate(" + x_fin  + "," + y_fin + ")");
+// width = 700  / number elements. 
+  var x_add = 2 * flt_cell_size_x;
+  var x_subtract = 12 * flt_cell_size_x;
+
+  var y_add = 2 * flt_cell_size_y;
+  var y_subtract = 7 * flt_cell_size_y;
+
+  var x_fin = x_raw > 370 ? x_raw - x_subtract: x_raw + x_add;
+  var y_fin = y_raw > 350 ? y_raw - y_subtract: y_raw + y_add;
+
+  sub_graph_container.attr("transform", "translate(" + x_fin  + "," + y_fin + ")");
 }    
 
-  
- 
+
+function fn_y_tick_update(str_y_val) {
+  y_axis_group.selectAll('.tick').each(function(d, i) {
+    if(d == str_y_val) {
+    d3.select(this).selectAll('text')
+      .style("fill", "red")
+      .style("font-size", int_font_size + 3);
+
+    }
+    else {
+      d3.select(this).selectAll('text')
+        .style("fill", "grey")
+        .style("font-size", int_font_size );
+    }
+ })
+}
+
+
+function fn_x_tick_update(str_x_val) {
+  x_axis_group.selectAll('.tick').each(function(d, i) {
+    if(d == str_x_val) {
+    d3.select(this).selectAll('text')
+      .style("fill", "red")
+      .style("font-size", int_font_size + 3);
+
+    }
+    else {
+      d3.select(this).selectAll('text')
+      .style("fill", "grey")
+      .style("font-size", int_font_size);
+    }
+ })
+}
+
+
+
+
+
+
 // can set .style("stroke", "none")
 group_container.append("g")
 .attr("id", "graph_detail_container")
@@ -131,10 +184,17 @@ group_container.append("g")
   .style("stroke", "none")
   .style("opacity", 1)
   .on("mouseover", function(d) { 
-    var str_message = "To: " + x_to(d.to) + "  From:   " +  y_from(d.from) + "  val: " + d.value;
+    var str_message = "To: " + x_to(d.to) + "  From:   " +  y_from(d.from) + "  val: " + d.value + " bandwidth " + x_to.bandwidth();
+    
+    var str_q =  "To: " + d.to + "  From:   " + d.from;
+    fn_y_tick_update(d.from);
+    fn_x_tick_update(d.to);
+    
     fn_sub_chart_pos(x_to(d.to),  y_from(d.from));
     // sub_graph_container.attr("transform", "translate(" + x_to(d.to)  + "," + y_from(d.from) + ")");
-    console.log(str_message);
+  //  console.log(d3.set(lbl_to_x).size());
+   // console.log(str_message);
+  // console.log(str_q);
   });
   
 // =======================================================================
@@ -146,14 +206,15 @@ group_container.append("g")
 var sub_graph_container = group_container.append("g")
   .attr("id", "sub_graph_container")
 
-sub_graph_container.append("rect")
-		.attr("width", 250)
-		.attr("height", 150)
-		.attr("x", 0)
+
+  sub_graph_container.append("rect")
+		.attr("width", 11 * flt_cell_size_x)
+		.attr("height", 7 * flt_cell_size_y)
+		.attr("x", 0) 
 		.attr("y", 0)
-		.attr("style", "fill:rgb(255,0,0)")
-		.attr("stroke", "grey")
-		.attr("opacity", "0.5");
+		.attr("style", "fill:rgb(255,255,255)")
+		.attr("stroke", "none")
+		.attr("opacity", ".95");
 		
 		
 		
