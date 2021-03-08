@@ -22,18 +22,14 @@ fn_to_json <- function(d) {
 }
 
 
-# vct_digits <- runif(int_num_elements, min = 7, max = 55) %>% round(digits = 0)
-# str_title <- "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod"
-# vct_z <- sapply(vct_digits, function(x) substr(str_title, 1, x))
-
-
-
 # new >>>>>>>
 int_num_elements <- 30
 
+set.seed(123)
 vct_str_length <- sample(7:55, int_num_elements, replace = TRUE)
-vct_z <- stri_rand_strings(int_num_elements, vct_str_length) 
-vct_z[1] <- "mark the koala climbs up trees"
+set.seed(123)
+vct_z <- stri_rand_strings(int_num_elements, vct_str_length, pattern =  "[a-z]") 
+vct_z[1] <- "Mark the koala climbs up trees with 55 characters and Z"
 
 # ASSERT labels are unique
 stopifnot((vct_z %>% unique() %>% length()) == int_num_elements)
@@ -44,22 +40,33 @@ vct_variable_x <- vct_z  %>% rep(times = int_num_elements)
 # A, A, A, A, B, B, B, B ..... D,D,D,D
 vct_variable_y <- vct_z  %>% rep(each = int_num_elements)
 
-vct_value <- runif(int_num_elements ^ 2, min = 1, max = 100) %>% round(digits = 0)
+vct_value <- runif(int_num_elements ^ 2, min = 23, max = 100) %>% round(digits = 0)
 
 df_hm_data <- data.frame(to = vct_variable_x, 
                          from = vct_variable_y, value = vct_value)
 
 # make the diagonal zero
 df_hm_data$value <- 
-  ifelse(df_hm_data$from == df_hm_data$to, 0, df_hm_data$value)
+  ifelse(df_hm_data$from == df_hm_data$to, NA, df_hm_data$value)
 
-lst_data <- list(data = df_hm_data, lbl_to_x = vct_z, lbl_from_y = rev(vct_z))
+# remove the diagonal
+df_hm_data_nd <- df_hm_data %>% filter(to != from)
+
+lst_data <- list(data = df_hm_data_nd, lbl_to_x = vct_z, lbl_from_y = rev(vct_z))
 
 
 
 # <<<<<<<<<
 # call D3
 r2d3(data = fn_to_json(lst_data), script = "mark_test.js",d3_version = "5")
+
+# range(df_hm_data$value, na.rm = TRUE)
+# set.seed(123)
+# df_hm_data %>% mutate(from_s = substr(from, 1, 5), to_s = substr(to, 1, 5) ) %>% 
+#   select(from_s, to_s, value) %>% sample_n(3)
+
+
+
 
 ```
 

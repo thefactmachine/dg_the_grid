@@ -54,8 +54,14 @@ vct_z[1] <- "mark the koala climbs up trees"
 (vct_z %>% unique() %>% length()) == int_num_elements
 
 
+df_hm_data %>% select(from, to, value) %>% filter(to == "jtnxehcfzhsucghcdzzdxoklscirivfmh") %>% View()
 
 
+
+
+
+
+df_hm_data %>% select(from, to, value) %>% filter(from == "mark the koala climbs up trees") 
 
 
 
