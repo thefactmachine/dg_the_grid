@@ -15,7 +15,7 @@ var margin = {top: 0, right: 0,
 var flt_padding = 0.06;
 var str_label_color = "grey";
 var int_rounding_factor = 0.1;
-var int_font_size = 8;
+var int_font_size = 10;
 // ====================================================================
 
 // We get an svg object as part of the R2D3 workflow
@@ -165,7 +165,7 @@ function fn_x_tick_update(str_x_val) {
 console.log("x bandwidth " + x_to.bandwidth())
 console.log("Y bandwidth " + y_from.bandwidth())
 
-var flt_range_min = x_to.bandwidth() * 0.3;
+var flt_range_min = x_to.bandwidth() * 0.1;
 var fn_size_sqrt = d3.scaleSqrt()
 .domain([d_min, d_max])
 .range([flt_range_min, x_to.bandwidth()]);
@@ -183,6 +183,7 @@ group_container.append("g")
 .data(plot_data)
 .enter()
 .append("rect")
+  // if the shape is scaled to match area with value then centreing within cell becomes tricky.
   .attr("x", function(d) { return fn_recalc_pos(fn_size_sqrt(d.value),x_to.bandwidth(), x_to(d.to))})
   .attr("y", function(d) { return fn_recalc_pos(fn_size_sqrt(d.value),y_from.bandwidth(), y_from(d.from))})
   .attr("rx", int_rounding_factor)
