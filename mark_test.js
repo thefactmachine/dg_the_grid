@@ -162,8 +162,18 @@ function fn_x_tick_update(str_x_val) {
 }
 
 
+console.log("x bandwidth " + x_to.bandwidth())
+console.log("Y bandwidth " + y_from.bandwidth())
+
+var flt_range_min = x_to.bandwidth() * 0.3;
+var fn_size_sqrt = d3.scaleSqrt()
+.domain([d_min, d_max])
+.range([flt_range_min, x_to.bandwidth()]);
 
 
+function fn_recalc_pos(flt_actual_size, flt_max_size, flt_start_pos) {
+  return(flt_start_pos + (flt_max_size - flt_actual_size) / 2);
+}
 
 
 // can set .style("stroke", "none")
@@ -173,19 +183,22 @@ group_container.append("g")
 .data(plot_data)
 .enter()
 .append("rect")
-  .attr("x", function(d) { return x_to(d.to) })
-  .attr("y", function(d) { return y_from(d.from) })
+  .attr("x", function(d) { return fn_recalc_pos(fn_size_sqrt(d.value),x_to.bandwidth(), x_to(d.to))})
+  .attr("y", function(d) { return fn_recalc_pos(fn_size_sqrt(d.value),y_from.bandwidth(), y_from(d.from))})
   .attr("rx", int_rounding_factor)
   .attr("ry", int_rounding_factor)
-  .attr("width", x_to.bandwidth() )
-  .attr("height", y_from.bandwidth() )
+  .attr("width", function(d) { return(fn_size_sqrt(d.value))})
+  .attr("height", function(d) { return(fn_size_sqrt(d.value))})
+ 
+  // .attr("width", x_to.bandwidth())
+ // .attr("height", y_from.bandwidth() )
   .style("fill", function(d) { return d_color(d.value)} )
   .style("stroke-width", 0.5)
   .style("stroke", "none")
   .style("opacity", 1)
   .on("mouseover", function(d) { 
     var str_message = "To: " + x_to(d.to) + "  From:   " +  y_from(d.from) + "  val: " + d.value + " bandwidth " + x_to.bandwidth();
-    
+    console.log(fn_size_sqrt(d.value));
     var str_q =  "To: " + d.to + "  From:   " + d.from;
     fn_y_tick_update(d.from);
     fn_x_tick_update(d.to);
@@ -194,6 +207,8 @@ group_container.append("g")
     // sub_graph_container.attr("transform", "translate(" + x_to(d.to)  + "," + y_from(d.from) + ")");
   //  console.log(d3.set(lbl_to_x).size());
    // console.log(str_message);
+
+  
   // console.log(str_q);
   });
   

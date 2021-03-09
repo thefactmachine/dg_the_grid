@@ -64,7 +64,7 @@ df_hm_data %>% select(from, to, value) %>% filter(to == "jtnxehcfzhsucghcdzzdxok
 df_hm_data %>% select(from, to, value) %>% filter(from == "mark the koala climbs up trees") 
 
 
-
+vct_h <- c(2.32, 25.58, 48.83)
 
 
 
