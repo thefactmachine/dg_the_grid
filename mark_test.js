@@ -176,6 +176,11 @@ function fn_recalc_pos(flt_actual_size, flt_max_size, flt_start_pos) {
 }
 
 
+var mouseOut = function(d){
+  d3.select(this).style('fill', d_color(d.value))
+};
+
+
 // can set .style("stroke", "none")
 group_container.append("g")
 .attr("id", "graph_detail_container")
@@ -198,20 +203,29 @@ group_container.append("g")
   .style("stroke", "none")
   .style("opacity", 1)
   .on("mouseover", function(d) { 
-    var str_message = "To: " + x_to(d.to) + "  From:   " +  y_from(d.from) + "  val: " + d.value + " bandwidth " + x_to.bandwidth();
-    console.log(fn_size_sqrt(d.value));
-    var str_q =  "To: " + d.to + "  From:   " + d.from;
+    // changes the tick colors to red
     fn_y_tick_update(d.from);
     fn_x_tick_update(d.to);
-    
+    // move the sub chart
     fn_sub_chart_pos(x_to(d.to),  y_from(d.from));
-    // sub_graph_container.attr("transform", "translate(" + x_to(d.to)  + "," + y_from(d.from) + ")");
+    // make the dot / square become red
+    d3.select(this).style("fill", "red");
+ 
+  
+  //  var str_message = "To: " + x_to(d.to) + "  From:   " +  y_from(d.from) + "  val: " + d.value + " bandwidth " + x_to.bandwidth();
+  //  console.log(fn_size_sqrt(d.value));
+  //  var str_q =  "To: " + d.to + "  From:   " + d.from;
+  //  makes the labels change color
+
+  //  sub_graph_container.attr("transform", "translate(" + x_to(d.to)  + "," + y_from(d.from) + ")");
   //  console.log(d3.set(lbl_to_x).size());
-   // console.log(str_message);
+  //  console.log(str_message);
 
   
   // console.log(str_q);
-  });
+  })
+  .on("mouseout", mouseOut); 
+
   
 // =======================================================================
 
