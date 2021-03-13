@@ -165,7 +165,7 @@ function fn_x_tick_update(str_x_val) {
 console.log("x bandwidth " + x_to.bandwidth())
 console.log("Y bandwidth " + y_from.bandwidth())
 
-var flt_range_min = x_to.bandwidth() * 0.1;
+var flt_range_min = x_to.bandwidth() * 0.3;
 var fn_size_sqrt = d3.scaleSqrt()
 .domain([d_min, d_max])
 .range([flt_range_min, x_to.bandwidth()]);
@@ -210,16 +210,9 @@ group_container.append("g")
     fn_sub_chart_pos(x_to(d.to),  y_from(d.from));
     // make the dot / square become red
     d3.select(this).style("fill", "red");
+    sub_g_text.text(d.value);
  
   
-  //  var str_message = "To: " + x_to(d.to) + "  From:   " +  y_from(d.from) + "  val: " + d.value + " bandwidth " + x_to.bandwidth();
-  //  console.log(fn_size_sqrt(d.value));
-  //  var str_q =  "To: " + d.to + "  From:   " + d.from;
-  //  makes the labels change color
-
-  //  sub_graph_container.attr("transform", "translate(" + x_to(d.to)  + "," + y_from(d.from) + ")");
-  //  console.log(d3.set(lbl_to_x).size());
-  //  console.log(str_message);
 
   
   // console.log(str_q);
@@ -237,14 +230,25 @@ var sub_graph_container = group_container.append("g")
   .attr("id", "sub_graph_container")
 
 
-  sub_graph_container.append("rect")
+var sub_graph_rect = sub_graph_container.append("rect")
 		.attr("width", 11 * flt_cell_size_x)
 		.attr("height", 7 * flt_cell_size_y)
 		.attr("x", 0) 
 		.attr("y", 0)
 		.attr("style", "fill:rgb(255,255,255)")
 		.attr("stroke", "none")
-		.attr("opacity", ".95");
+    .attr("opacity", ".95");
+  
+    sub_graph_container.append("text") 
+    .attr("x", 10)
+    .attr("y", 20)
+    .text("Value:");
+
+var sub_g_text = sub_graph_container.append("text")
+    .attr("x", 50)
+    .attr("y", 20);
+
+
 		
 		
 		
