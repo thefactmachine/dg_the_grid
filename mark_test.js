@@ -162,10 +162,8 @@ function fn_x_tick_update(str_x_val) {
 }
 
 
-console.log("x bandwidth " + x_to.bandwidth())
-console.log("Y bandwidth " + y_from.bandwidth())
+var flt_range_min = x_to.bandwidth() * 0.1;
 
-var flt_range_min = x_to.bandwidth() * 0.3;
 var fn_size_sqrt = d3.scaleSqrt()
 .domain([d_min, d_max])
 .range([flt_range_min, x_to.bandwidth()]);
@@ -177,47 +175,70 @@ function fn_recalc_pos(flt_actual_size, flt_max_size, flt_start_pos) {
 
 
 var mouseOut = function(d){
-  d3.select(this).style('fill', d_color(d.value))
+  d3.select(this)
+  .selectAll('.vis_cell')
+  .style('fill', d_color(d.value));
 };
 
 
-// can set .style("stroke", "none")
-group_container.append("g")
-.attr("id", "graph_detail_container")
-.selectAll()
-.data(plot_data)
-.enter()
-.append("rect")
-  // if the shape is scaled to match area with value then centreing within cell becomes tricky.
+// step 1  bind group container to the data
+
+// bind this as follows : svg > group_container > graph_detail_container
+var g_detail_container = group_container.append("g").attr("id", "graph_detail_container")
+
+// now we need N group elements underneath this. 
+// Where N is the number of elements in the grid
+
+
+
+
+var gg_mark =  g_detail_container
+                .selectAll()
+                .data(plot_data)
+                .enter()
+                .append("g")
+                .on("mouseover", function(d) { 
+                  // changes the tick colors to red
+                  fn_y_tick_update(d.from);
+                  fn_x_tick_update(d.to);
+                  // move the sub chart
+                  fn_sub_chart_pos(x_to(d.to),  y_from(d.from));
+                  // make the dot / square become red                  
+                  sub_g_text.text(d.value);
+                  d3.select(this)
+                    .selectAll('.vis_cell')
+                    .style("fill", "red");
+                })
+                .on("mouseout", mouseOut); 
+
+// the cells to be targeted by the mouse
+gg_mark
+  .append("rect")
+  .attr("class", "mouse_target_cell")                
+  .attr("x", function(d) { return x_to(d.to)})
+  .attr("y", function(d) { return  y_from(d.from) })
+  
+  .attr("width", function(d) { return x_to.bandwidth()})
+  .attr("height", function(d) { return y_from.bandwidth()} )
+  .style("fill", function(d) { return "grey" })
+  .style("opacity", 0)
+
+
+
+// the cells to be displayed
+gg_mark
+  .append("rect")
+  .attr("class", "vis_cell")                
   .attr("x", function(d) { return fn_recalc_pos(fn_size_sqrt(d.value),x_to.bandwidth(), x_to(d.to))})
   .attr("y", function(d) { return fn_recalc_pos(fn_size_sqrt(d.value),y_from.bandwidth(), y_from(d.from))})
   .attr("rx", int_rounding_factor)
   .attr("ry", int_rounding_factor)
   .attr("width", function(d) { return(fn_size_sqrt(d.value))})
   .attr("height", function(d) { return(fn_size_sqrt(d.value))})
- 
-  // .attr("width", x_to.bandwidth())
- // .attr("height", y_from.bandwidth() )
   .style("fill", function(d) { return d_color(d.value)} )
-  .style("stroke-width", 0.5)
-  .style("stroke", "none")
   .style("opacity", 1)
-  .on("mouseover", function(d) { 
-    // changes the tick colors to red
-    fn_y_tick_update(d.from);
-    fn_x_tick_update(d.to);
-    // move the sub chart
-    fn_sub_chart_pos(x_to(d.to),  y_from(d.from));
-    // make the dot / square become red
-    d3.select(this).style("fill", "red");
-    sub_g_text.text(d.value);
- 
-  
 
-  
-  // console.log(str_q);
-  })
-  .on("mouseout", mouseOut); 
+
 
   
 // =======================================================================

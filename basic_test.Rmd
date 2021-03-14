@@ -1,7 +1,7 @@
 ---
-title: "basic test"
-author: "Mark"
-date: "03/03/2021"
+title: ""
+author: ""
+date: ""
 output: html_document
 ---
 
@@ -13,7 +13,7 @@ library(jsonlite)
 library(stringi)
 ```
 
-## This should be the plot
+## 3782 Interactive Elements
 ```{r something_here, echo=FALSE}
 
 fn_to_json <- function(d) {
@@ -23,7 +23,7 @@ fn_to_json <- function(d) {
 
 
 # new >>>>>>>
-int_num_elements <- 60
+int_num_elements <- 62
 
 set.seed(123)
 vct_str_length <- sample(7:55, int_num_elements, replace = TRUE)
