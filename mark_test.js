@@ -189,15 +189,13 @@ var g_detail_container = group_container.append("g").attr("id", "graph_detail_co
 // now we need N group elements underneath this. 
 // Where N is the number of elements in the grid
 
-
-
-
 var gg_mark =  g_detail_container
                 .selectAll()
                 .data(plot_data)
                 .enter()
                 .append("g")
                 .on("mouseover", function(d) { 
+                  console.log("From: " + d.from + "To: "  + d.to);
                   // changes the tick colors to red
                   fn_y_tick_update(d.from);
                   fn_x_tick_update(d.to);
