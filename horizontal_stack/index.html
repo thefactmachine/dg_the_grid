@@ -35,43 +35,68 @@ var arr_data =
 [
 	{
 		"group": "<20",
-		"Women": mark_datum.female_20,
-		"Men": mark_datum.male_20
-
+		"Women": 15,
+		"Men": 5
 	},
 	{
 		"group": "20 - 29",
-		"Women": mark_datum.female_20_29,
-		"Men": mark_datum.male_20_29
-
+		"Women": 6,
+		"Men": 6
 	},
 	{
 		"group": "30 - 39",
-		"Women": mark_datum.female_30_39,
-		"Men": mark_datum.male_30_39
-
+		"Women": 11,
+		"Men": 28
 	},
 	{
 		"group": "40 - 49",
-		"Women": mark_datum.female_40_49,
-		"Men": mark_datum.male_40_49
-
+		"Women": 19,
+		"Men": 6
   },
-
   {
 		"group": "50 - 60",
-		"Women": mark_datum.female_50_59,
-		"Men": mark_datum.male_50_59,
-
+		"Women": 6,
+		"Men": 26
   },
-  
   {
 		"group": "> 60",
-		"Women": mark_datum.female_60,
-		"Men": mark_datum.male_60,
-
+		"Women": 12,
+		"Men": 19
 	}
+];
 
+var new_arr_data = 
+[
+	{
+		"group": "<20",
+		"Women": 7,
+		"Men": 23
+	},
+	{
+		"group": "20 - 29",
+		"Women": 9,
+		"Men": 2
+	},
+	{
+		"group": "30 - 39",
+		"Women": 16,
+		"Men": 8
+	},
+	{
+		"group": "40 - 49",
+		"Women": 28,
+		"Men": 7
+  },
+  {
+		"group": "50 - 60",
+		"Women": 25,
+		"Men": 9
+  },
+  {
+		"group": "> 60",
+		"Women": 19,
+		"Men": 12
+	}
 ];
 
 
@@ -89,117 +114,182 @@ var group_totals = d3.nest()
         });
       })
       .entries(arr_data);
-      
-     console.log(group_totals);
+
+// arr_data = new_arr_data;
+
+// var mark_subgroups = Object.keys(arr_data[0]).slice(1);
 
 
+var mark_groups = d3.map(arr_data, function(d){return(d.group)}).keys();
+var mark_stackedData = d3.stack().keys(["Women", "Men"])(new_arr_data);
 
 
+ // ==========================================================================  
+// THINGS THAT HAPPEN ONCE
 // ==========================================================================  
 
-// set the dimensions and margins of the graph
-
-// left is space for the axis
-
-
-
-var int_width = 230;
-var int_height = 170;
-
-var  margin_left = 40;
-var margin_top = 0;
+  // dimensions
+  var int_width = 520;
+  var int_height = 370;
+  var margin_left = 40;
+  var margin_top = 0;
 
 
-// append the svg object to the body of the page
-var svg = d3.select("#my_dataviz")
-.append("svg")
-  .attr("width", int_width)
-  .attr("height", int_height)
-.append("g")
-  .attr("transform",
-        "translate(" + margin_left + "," + margin_top + ")");
+// append the svg to div and append group to svg
+  var svg = d3.select("#my_dataviz")
+  .append("svg")
+    .attr("width", int_width)
+    .attr("height", int_height)
+      .append("g")
+      .attr("transform",
+      "translate(" + margin_left + "," + margin_top + ")");
+  
+  // color
+  var color = d3.scaleOrdinal()
+      .domain(["Women", "Men"])
+      .range(['#e41a1c','#377eb8'])
 
+  // y scale
+  var y = d3.scaleBand()
+        .domain(["<20", "20 - 29", "30 - 39", "40 - 49", "50 - 60", "> 60"])
+        .range([0, int_height])
+        .paddingInner([0.2])
+        .paddingOuter([0]);
 
+  // y axis 
+  var sg_y_axis = svg.append("g")
+      .attr("transform", "translate(0," + "0" + ")")
+      .call(d3.axisLeft(y));
+      sg_y_axis.select(".domain").remove()
+  
+// ==========================================================================  
 // ==========================================================================  
 
-  var mark_subgroups = Object.keys(arr_data[0]).slice(1);
-  var mark_groups = d3.map(arr_data, function(d){return(d.group)}).keys();
-
-  var mark_stackedData = d3.stack()
-    .keys(mark_subgroups)
-    (arr_data)
+function fn_graph_update() {
+  mark_nodes
+    .attr("y", function(d) { return y(d.data.group); })
+    .attr("x", function(d) { return x(d[0]);}  )
+    .attr("width", function(d) { return x(d[1]) - x(d[0]); })
+    .attr("height",y.bandwidth());
+}
 
 
 // ==========================================================================  
   
   // Add x axis -- Value scale
   // max total is 39 -- might have to subtract something to fit in width
-  var max_val = 70;
-    var x = d3.scaleLinear()
-    .domain([0, max_val])
-    .range([0, int_width]);
-
- /*   
- // dont need bottom axis   
- var sg_x_axis = svg.append("g")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x).tickSizeOuter(0));
-  */
-    // sg_x_axis.select(".domain").remove()
   
-// ==========================================================================
+  // define the x scale here....
+  var max_val = d3.max(arr_totals);
   
-  // Add y axis 
-  // 600 is the height
-   var y = d3.scaleBand()
-      .domain(mark_groups)
-      .range([0, int_height])
-      .paddingInner([0.2])
-      .paddingOuter([0]);
-  
- 
-  var sg_y_axis = svg.append("g")
-    .attr("transform", "translate(0," + "0" + ")")
-    .call(d3.axisLeft(y));
-    sg_y_axis.select(".domain").remove()
-  
+  var x = d3.scaleLinear().domain([0, max_val]).range([0, int_width]);
 
-    // ==========================================================================
-
-    var color = d3.scaleOrdinal()
-    .domain(mark_subgroups)
-    .range(['#e41a1c','#377eb8'])
-
-  // ==========================================================================   
-   
- 
-    //    .attr("y", function(d) { return y(d.data.group); })
-    //      .attr("fake", function(d) { return console.log(d[0])} )
-    //     .attr("fake", function(d) { return console.log(d[1])} )
-    //     .attr("fake", function(d) { return console.log(d)} )
+// ==========================================================================  
+// ==========================================================================  
 
 
-      // Show the bars
+// ==========================================================================  
+// ==========================================================================  
+// Show the bars
+ var mark_nodes = 
   svg.append("g")
     .selectAll("g")
-
     .data(mark_stackedData)
     .enter()
       .append("g")
       .attr("class", "variable group")
       .attr("fill", function(d) { return color(d.key); })
+      
       .selectAll("rect")
-      // enter a second time = loop subgroup per subgroup to add all rectangles
       .data(function(d) { return d; })
       .enter()
         .append("rect")
-     //     .attr("fake", function(d) { return console.log(d)} )
-          .attr("y", function(d) { return y(d.data.group); })
-          .attr("x", function(d) { return x(d[0]);}  )
-          .attr("width", function(d) { return x(d[1]) - x(d[0]); })
-          .attr("height",y.bandwidth())
-   
+        .attr("y", function(d) { return y(d.data.group); })
+        .attr("x", function(d) { return x(d[0]);}  )
+        .attr("width", function(d) { return x(d[1]) - x(d[0]); })
+        .attr("height",y.bandwidth());
+ 
+// ==========================================================================  
+// ==========================================================================  
 
+
+/*
+
+var arr_gender = ["Women", "Men"];
+lcl_data = new_arr_data;
+
+
+arr_gender.forEach(function(key, key_index){
+  
+  var bar = svg.selectAll(".bar-" + key).data(stack(lcl_data)[key_index], function(d){ return d.data.group + "-" + key; });
+  
+  bar
+    .attr("y", function(d){ return y(d.data.group); })
+    .attr("x", function(d){ return x(d[1]);})
+    .attr("width", function(d){ return x(d[1]) - x(d[0]); });
+  
+  bar
+    .enter()
+    .append("rect")
+      .attr("class", function(d){ return "bar bar-" + key; })
+      .attr("y", function(d){ return y(d.data.group);})
+      .attr("x", function(d){ return x(d[1]);})
+      .attr("height", y.bandwidth())
+      .attr("width", function(d){ return x(d[1]) - x(d[0]); })
+      .attr("fill", function(d){ return color(key); })
+}
+
+*/
+
+
+
+
+
+
+
+
+
+
+// fn_graph_update();
+
+
+
+
+/*
+
+var xx = d3.stack().keys(["Women", "Men"])(arr_data);
+
+
+
+mark_nodes.data(xx);
+fn_graph_update(mark_nodes);
+
+mark_nodes.data(xx);
+fn_graph_update();
+
+
+
+mark_nodes.data()
+
+var mark_stackedData = d3.stack().keys(["Women", "Men"])(new_arr_data);
+
+*/
+
+// fn_graph_update(mark_nodes);
+// nodes.data(new_nodes);
+
+// PLAN
+// 1) another set of data with the same x scale
+// 2) do the update procedure using original data set
+// 3) now switch to new data 
+
+         // nodes.data(new_nodes);
+         // update();
+  
+
+
+
+/*
 var totalLabels = svg.append('g').attr('class', 'totals');
 
 totalLabels.selectAll('.total')
@@ -212,10 +302,6 @@ totalLabels.selectAll('.total')
   
   .attr("x", function(d) {return x(d.value) + 5;})
   .text(function(d) {return d.value;});
-
-
-
-// console.log(x.bandwidth());
-
+*/
 
 </script>
