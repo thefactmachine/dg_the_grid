@@ -9,7 +9,15 @@
 -->
 
 
-<script src="https://d3js.org/d3.v4.min.js"></script>
+<style>
+  button {
+    margin-top: 30px;
+    margin-right: 20px;
+  }
+</style>
+
+
+<script src="https://d3js.org/d3.v5.min.js"></script>
 
 
 <!-- Also It is C:/ not C:// -->
@@ -18,22 +26,16 @@
 <!-- Create a div where the graph will take place -->
 <div id="my_dataviz"></div>
 
-<button id="update">Update</button>
+<button id="update_same_scale">Update Same Scale</button>
+<button id="update_big_scale">Update large Scale</button>
+
 
 
 <script>
 
+
+// https://bl.ocks.org/HarryStevens/7e3ec1a6722a153a5d102b6c42f4501d
 // https://www.d3-graph-gallery.com/graph/barplot_stacked_basicWide.html
-
-
-
-
-var mark_datum = 
-{"female_20" : 15,  "female_20_29" : 6,  "female_30_39" : 11,  
-"female_40_49" : 19, "female_50_59" : 6, "female_60" : 12,  
-
-"male_20" : 5,  "male_20_29" : 6,  "male_30_39" : 28, 
-"male_40_49" : 6, "male_50_59" : 26, "male_60" : 19 };
 
 var arr_data = 
 [
@@ -104,6 +106,46 @@ var new_arr_data =
 ];
 
 
+var arr_data_large = 
+[
+	{
+		"group": "<20",
+		"Women": 564,
+		"Men": 700
+	},
+	{
+		"group": "20 - 29",
+		"Women": 939,
+		"Men": 234
+	},
+	{
+		"group": "30 - 39",
+		"Women": 160,
+		"Men": 356
+	},
+	{
+		"group": "40 - 49",
+		"Women": 823,
+		"Men": 700
+  },
+  {
+		"group": "50 - 60",
+		"Women": 1200,
+		"Men": 945
+  },
+  {
+		"group": "> 60",
+		"Women": 345,
+		"Men": 450
+	}
+];
+
+
+
+
+
+
+
 
 var arr_totals= arr_data.map(function(q)  {return(q.Women + q.Men);})
 // console.log(arr_totals);
@@ -119,16 +161,7 @@ var group_totals = d3.nest()
       })
       .entries(arr_data);
 
-// arr_data = new_arr_data;
-
-// var mark_subgroups = Object.keys(arr_data[0]).slice(1);
-
-
-var mark_groups = d3.map(arr_data, function(d){return(d.group)}).keys();
-var mark_stackedData = d3.stack().keys(["Women", "Men"])(new_arr_data);
-
-
- // ==========================================================================  
+// ==========================================================================  
 // THINGS THAT HAPPEN ONCE
 // ==========================================================================  
 
@@ -148,9 +181,12 @@ var mark_stackedData = d3.stack().keys(["Women", "Men"])(new_arr_data);
       .attr("transform",
       "translate(" + margin_left + "," + margin_top + ")");
   
+  var arr_gender = ["Women", "Men"];
+  var stack = d3.stack().keys(arr_gender);
+
   // color
   var color = d3.scaleOrdinal()
-      .domain(["Women", "Men"])
+      .domain(arr_gender)
       .range(['#e41a1c','#377eb8'])
 
   // y scale
@@ -164,81 +200,29 @@ var mark_stackedData = d3.stack().keys(["Women", "Men"])(new_arr_data);
   var sg_y_axis = svg.append("g")
       .attr("transform", "translate(0," + "0" + ")")
       .call(d3.axisLeft(y));
-      sg_y_axis.select(".domain").remove()
-  
-// ==========================================================================  
-// ==========================================================================  
+      sg_y_axis.select(".domain").remove();
 
-function fn_graph_update() {
-  mark_nodes
-    .attr("y", function(d) { return y(d.data.group); })
-    .attr("x", function(d) { return x(d[0]);}  )
-    .attr("width", function(d) { return x(d[1]) - x(d[0]); })
-    .attr("height",y.bandwidth());
-}
-
-
-// ==========================================================================  
-  
-  // Add x axis -- Value scale
-  // max total is 39 -- might have to subtract something to fit in width
-  
-  // define the x scale here....
-  var max_val = d3.max(arr_totals);
-  
-  var x = d3.scaleLinear().domain([0, max_val]).range([0, int_width]);
-
-// ==========================================================================  
-// ==========================================================================  
-
-
-// ==========================================================================  
-// ==========================================================================  
-// Show the bars
  
-
-/*
-var mark_nodes = 
-  svg.append("g")
-    .selectAll("g")
-    .data(mark_stackedData)
-    .enter()
-      .append("g")
-      .attr("class", "variable group")
-      .attr("fill", function(d) { return color(d.key); })
-      
-      .selectAll("rect")
-      .data(function(d) { return d; })
-      .enter()
-        .append("rect")
-        .attr("y", function(d) { return y(d.data.group); })
-        .attr("x", function(d) { return x(d[0]);}  )
-        .attr("width", function(d) { return x(d[1]) - x(d[0]); })
-        .attr("height",y.bandwidth());
- */
-// ==========================================================================  
+  
 // ==========================================================================  
 
-// https://bl.ocks.org/HarryStevens/7e3ec1a6722a153a5d102b6c42f4501d
+// var max_val = d3.max(arr_totals);
+// var x = d3.scaleLinear().domain([0, max_val]).range([0, int_width]);
 
 
-var arr_gender = ["Women", "Men"];
+
+
+
+
 // lcl_data = new_arr_data;
-
-
-var stack = d3.stack()
-        .keys(arr_gender)
-        .order(d3.stackOrderNone)
-        .offset(d3.stackOffsetNone);
-
-// console.log(lcl_data);
-
 
 
 function fn_sub_g_draw(lcl_data) {
 
-  arr_gender.forEach(function(key, key_index){
-    
+  var max_value = d3.max(lcl_data.map(function(q)  {return(q.Women + q.Men);}));
+  var x = d3.scaleLinear().domain([0, max_value]).range([0, int_width]);
+
+  arr_gender.forEach(function(key, key_index){   
     var bar = svg.selectAll(".bar-" + key)
       .data(stack(lcl_data)[key_index], 
       function(d){ return d.data.group + "-" + key; });
@@ -263,54 +247,29 @@ function fn_sub_g_draw(lcl_data) {
 fn_sub_g_draw(new_arr_data);
 
 
-function updateData() {fn_sub_g_draw(arr_data);}
+function fn_update_same_scale() {fn_sub_g_draw(arr_data);}
 
-d3.select('#update').on("click", updateData);
-
-
-
-
-
-// fn_graph_update();
-
-
+d3.select('#update_same_scale').on("click", fn_update_same_scale);
 
 
 /*
 
-var xx = d3.stack().keys(["Women", "Men"])(arr_data);
+To do:  
+1) large scale data
+2) totals
+3) functionalise
 
 
 
-mark_nodes.data(xx);
-fn_graph_update(mark_nodes);
-
-mark_nodes.data(xx);
-fn_graph_update();
+<button id="update_same_scale">Update Same Scale</button>
+<button id="update_big_scale">Update large Scale</button>
 
 
 
-mark_nodes.data()
 
-var mark_stackedData = d3.stack().keys(["Women", "Men"])(new_arr_data);
+group_totals
+arr_totals
 
-*/
-
-// fn_graph_update(mark_nodes);
-// nodes.data(new_nodes);
-
-// PLAN
-// 1) another set of data with the same x scale
-// 2) do the update procedure using original data set
-// 3) now switch to new data 
-
-         // nodes.data(new_nodes);
-         // update();
-  
-
-
-
-/*
 var totalLabels = svg.append('g').attr('class', 'totals');
 
 totalLabels.selectAll('.total')
@@ -324,5 +283,8 @@ totalLabels.selectAll('.total')
   .attr("x", function(d) {return x(d.value) + 5;})
   .text(function(d) {return d.value;});
 */
+
+
+
 
 </script>
