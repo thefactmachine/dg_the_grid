@@ -5,9 +5,11 @@
 
 <!-- 
 <script src="https://d3js.org/d3.v5.js"></script>
+<script type="text/javascript" src="d3_v5_long.js"></script>  
 -->
 
-<script type="text/javascript" src="d3_v5_long.js"></script>  
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
 
 
 <!-- Also It is C:/ not C:// -->
@@ -15,6 +17,8 @@
 
 <!-- Create a div where the graph will take place -->
 <div id="my_dataviz"></div>
+
+<button id="update">Update</button>
 
 
 <script>
@@ -129,7 +133,7 @@ var mark_stackedData = d3.stack().keys(["Women", "Men"])(new_arr_data);
 // ==========================================================================  
 
   // dimensions
-  var int_width = 520;
+  var int_width = 560;
   var int_height = 370;
   var margin_left = 40;
   var margin_top = 0;
@@ -191,7 +195,10 @@ function fn_graph_update() {
 // ==========================================================================  
 // ==========================================================================  
 // Show the bars
- var mark_nodes = 
+ 
+
+/*
+var mark_nodes = 
   svg.append("g")
     .selectAll("g")
     .data(mark_stackedData)
@@ -208,43 +215,57 @@ function fn_graph_update() {
         .attr("x", function(d) { return x(d[0]);}  )
         .attr("width", function(d) { return x(d[1]) - x(d[0]); })
         .attr("height",y.bandwidth());
- 
+ */
 // ==========================================================================  
 // ==========================================================================  
 
+// https://bl.ocks.org/HarryStevens/7e3ec1a6722a153a5d102b6c42f4501d
 
-/*
 
 var arr_gender = ["Women", "Men"];
-lcl_data = new_arr_data;
+// lcl_data = new_arr_data;
 
 
-arr_gender.forEach(function(key, key_index){
-  
-  var bar = svg.selectAll(".bar-" + key).data(stack(lcl_data)[key_index], function(d){ return d.data.group + "-" + key; });
-  
-  bar
-    .attr("y", function(d){ return y(d.data.group); })
-    .attr("x", function(d){ return x(d[1]);})
-    .attr("width", function(d){ return x(d[1]) - x(d[0]); });
-  
-  bar
-    .enter()
-    .append("rect")
-      .attr("class", function(d){ return "bar bar-" + key; })
-      .attr("y", function(d){ return y(d.data.group);})
-      .attr("x", function(d){ return x(d[1]);})
-      .attr("height", y.bandwidth())
-      .attr("width", function(d){ return x(d[1]) - x(d[0]); })
-      .attr("fill", function(d){ return color(key); })
-}
+var stack = d3.stack()
+        .keys(arr_gender)
+        .order(d3.stackOrderNone)
+        .offset(d3.stackOffsetNone);
 
-*/
+// console.log(lcl_data);
 
 
 
+function fn_sub_g_draw(lcl_data) {
+
+  arr_gender.forEach(function(key, key_index){
+    
+    var bar = svg.selectAll(".bar-" + key)
+      .data(stack(lcl_data)[key_index], 
+      function(d){ return d.data.group + "-" + key; });
+    
+    bar
+      .attr("y", function(d){ return y(d.data.group); })
+      .attr("x", function(d){ return x(d[0]);})
+      .attr("width", function(d){ return x(d[1]) - x(d[0]); });
+    
+    bar
+      .enter()
+      .append("rect")
+        .attr("class", function(d){ return "bar bar-" + key; })
+        .attr("y", function(d){ return y(d.data.group);})
+        .attr("x", function(d){ return x(d[0]);})
+        .attr("height", y.bandwidth())
+        .attr("width", function(d){ return x(d[1]) - x(d[0]); })
+        .attr("fill", function(d){ return color(key); })
+  }); //for.each
+} // fn_sub_g_draw
+
+fn_sub_g_draw(new_arr_data);
 
 
+function updateData() {fn_sub_g_draw(arr_data);}
+
+d3.select('#update').on("click", updateData);
 
 
 
