@@ -120,8 +120,8 @@ var arr_data_large =
 	},
 	{
 		"group": "30 - 39",
-		"Women": 160,
-		"Men": 356
+		"Women": 60,
+		"Men": 56
 	},
 	{
 		"group": "40 - 49",
@@ -142,13 +142,6 @@ var arr_data_large =
 
 
 
-
-
-
-
-
-var arr_totals= arr_data.map(function(q)  {return(q.Women + q.Men);})
-// console.log(arr_totals);
 
 var group_totals = d3.nest()
       .key(function(d) {
@@ -206,23 +199,13 @@ var group_totals = d3.nest()
   
 // ==========================================================================  
 
-// var max_val = d3.max(arr_totals);
-// var x = d3.scaleLinear().domain([0, max_val]).range([0, int_width]);
-
-
-
-
-
-
-// lcl_data = new_arr_data;
-
 
 function fn_sub_g_draw(lcl_data) {
-
   var max_value = d3.max(lcl_data.map(function(q)  {return(q.Women + q.Men);}));
   var x = d3.scaleLinear().domain([0, max_value]).range([0, int_width]);
-
+  
   arr_gender.forEach(function(key, key_index){   
+    
     var bar = svg.selectAll(".bar-" + key)
       .data(stack(lcl_data)[key_index], 
       function(d){ return d.data.group + "-" + key; });
@@ -248,11 +231,14 @@ fn_sub_g_draw(new_arr_data);
 
 
 function fn_update_same_scale() {fn_sub_g_draw(arr_data);}
-
 d3.select('#update_same_scale').on("click", fn_update_same_scale);
 
+function fn_update_big_scale() {fn_sub_g_draw(arr_data_large);}
+d3.select('#update_big_scale').on("click", fn_update_big_scale);
 
 /*
+arr_data_large
+<button id="update_big_scale">Update large Scale</button>
 
 To do:  
 1) large scale data
