@@ -141,19 +141,6 @@ var arr_data_large =
 ];
 
 
-
-
-var group_totals = d3.nest()
-      .key(function(d) {
-        return d.group;
-      })
-      .rollup(function(d) {
-        return d3.sum(d, function(g) {
-          return g.Women + g.Men;
-        });
-      })
-      .entries(arr_data);
-
 // ==========================================================================  
 // THINGS THAT HAPPEN ONCE
 // ==========================================================================  
@@ -164,11 +151,18 @@ var group_totals = d3.nest()
   var margin_left = 40;
   var margin_top = 0;
 
+  // shrink the bars in x pixels to allow for labels
+  var int_inset = 30;
+
+  // offset the labels from the end of  bar
+  var int_label_offset = 10;
+
+
 
 // append the svg to div and append group to svg
   var svg = d3.select("#my_dataviz")
   .append("svg")
-    .attr("width", int_width)
+    .attr("width", int_width + margin_left)
     .attr("height", int_height)
       .append("g")
       .attr("transform",
@@ -199,10 +193,21 @@ var group_totals = d3.nest()
   
 // ==========================================================================  
 
+var arr_initial = [10, 20, 30, 40, 50, 60]
+var totalLabels = svg.append('g').attr('class', 'totals');
+
+totalLabels.selectAll('.total')
+    .data(arr_initial)
+    .enter()
+    .append('text')
+    .attr('id', function(d, i){ return "text-total-" + i; })
+    .style("font-size", "14px")
+
+// ==========================================================================  
 
 function fn_sub_g_draw(lcl_data) {
   var max_value = d3.max(lcl_data.map(function(q)  {return(q.Women + q.Men);}));
-  var x = d3.scaleLinear().domain([0, max_value]).range([0, int_width]);
+  var x = d3.scaleLinear().domain([0, max_value]).range([0, int_width - int_inset]);
   
   arr_gender.forEach(function(key, key_index){   
     
@@ -211,9 +216,10 @@ function fn_sub_g_draw(lcl_data) {
       function(d){ return d.data.group + "-" + key; });
     
     bar
-      .attr("y", function(d){ return y(d.data.group); })
-      .attr("x", function(d){ return x(d[0]);})
-      .attr("width", function(d){ return x(d[1]) - x(d[0]); });
+      .transition().duration(100)
+        .attr("y", function(d){ return y(d.data.group); })
+        .attr("x", function(d){ return x(d[0]);})
+        .attr("width", function(d){ return x(d[1]) - x(d[0]);});
     
     bar
       .enter()
@@ -225,52 +231,30 @@ function fn_sub_g_draw(lcl_data) {
         .attr("width", function(d){ return x(d[1]) - x(d[0]); })
         .attr("fill", function(d){ return color(key); })
   }); //for.each
+
+
+  var group_totals = d3.nest()
+    .key(function(d) {return d.group;})
+    .rollup(function(d) {return d3.sum(d, function(g) {return g.Women + g.Men;});})
+    .entries(lcl_data);
+   
+  group_totals.forEach(function(item, item_index) {
+    var text_item =  d3.select('#' + 'text-total-' + item_index)
+    text_item.text(item.value);
+    text_item.attr("y", y(item.key) + (y.bandwidth() / 2));
+    text_item.attr("x", x(item.value) +  int_label_offset);
+  }) // group_totals.forEach
+  
 } // fn_sub_g_draw
 
-fn_sub_g_draw(new_arr_data);
 
+
+fn_sub_g_draw(new_arr_data);
 
 function fn_update_same_scale() {fn_sub_g_draw(arr_data);}
 d3.select('#update_same_scale').on("click", fn_update_same_scale);
 
 function fn_update_big_scale() {fn_sub_g_draw(arr_data_large);}
 d3.select('#update_big_scale').on("click", fn_update_big_scale);
-
-/*
-arr_data_large
-<button id="update_big_scale">Update large Scale</button>
-
-To do:  
-1) large scale data
-2) totals
-3) functionalise
-
-
-
-<button id="update_same_scale">Update Same Scale</button>
-<button id="update_big_scale">Update large Scale</button>
-
-
-
-
-group_totals
-arr_totals
-
-var totalLabels = svg.append('g').attr('class', 'totals');
-
-totalLabels.selectAll('.total')
-  .data(group_totals)
-  .enter().append('text')
-  .attr('class', 'total')
-  .style("font-size", "10px")
-  // vertical
-  .attr("y", function(d) {return  y(d.key) + (y.bandwidth() / 2 ) ;})
-  
-  .attr("x", function(d) {return x(d.value) + 5;})
-  .text(function(d) {return d.value;});
-*/
-
-
-
 
 </script>
