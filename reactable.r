@@ -100,19 +100,66 @@ reactable(
   defaultColDef = colDef(footerStyle = list(fontWeight = "bold"))
 )
 
+
+
 setwd("/Users/zurich/Documents/dg_the_grid")
-
 df_data_flat <- read.csv("sector_data_flat.csv")
-
 names(df_data_flat) <- c("code", "sector", "difference", "percent_diff")
 
+df_add <- data.frame(code = "Z", sector = "Other", difference = -1671, percent_diff = -.402)
+df_data_flat <- rbind(df_data_flat, df_add)
+
+
+int_actual_total <- -3264579
+df_data_flat$difference %>% sum() == int_actual_total
 
 
 
-reactable(  
+rct_cd_code <- reactable::colDef(name = "Code")
+rct_cd_sector <- reactable::colDef(name = "Sector")
+
+rct_comma_fmt <- reactable::colFormat(separators = TRUE)
+rct_cd_diff <- reactable::colDef(name = "Difference", format = rct_comma_fmt)
+
+rct_pc_fmt <- reactable::colFormat(percent = TRUE, digits = 1)
+rct_cd_pc_diff <- reactable::colDef(name = "% Difference", format = rct_pc_fmt)
+
+
+reactable(
   df_data_flat,
-  defaultSorted = "code"
+  defaultPageSize = nrow(df_data_flat),
+  defaultSorted = "code",
+  columns = list( 
+    code = rct_cd_code,
+    sector = rct_cd_sector,
+    difference = rct_cd_diff,
+    percent_diff = rct_cd_pc_diff
+  ) # list
 )
+
+
+
+# these are in position order
+columns = list(
+  account = colDef(
+    name = "Account",
+    format = colFormat(prefix = "@")
+  ),
+  followers = colDef(
+    name = "Followers",
+    defaultSortOrder = "desc",
+    format = colFormat(separators = TRUE)
+  ),
+  exclusive_followers_pct = colDef(
+    name = "Exclusive Followers",
+    defaultSortOrder = "desc",
+    format = colFormat(percent = TRUE, digits = 1)
+  )
+)
+
+
+
+
 
 
 
