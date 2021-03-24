@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Minimal D3 Example</title>
+<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+ 
+<style>
+.mark_bar {
+  fill: steelblue;
+}
+ 
+.mark_bar:hover {
+  fill: orange;
+}
+
+.hit_bar {
+  fill: transparent;
+  stroke: transparent;
+}
+
+
+
+
+</style>
+</head>
+<body>
+<script type="text/javascript">
+ 
+var data = [150, 230, 180, 90];
+
+// appends svg to the body element
+var svg = d3.select("body")
+            .append("svg")
+            .attr("width", 300)
+            .attr("height", 200);
+ 
+// bind the group element with data
+var gg_mark = svg.selectAll()
+    .data(data)
+    .enter()
+    .append("g")
+    .on('mouseover', function(d) {  
+        d3.select(this)
+        .selectAll('.mark_bar')
+        .style("fill", "red");
+    })
+
+// setting to null will return the fill to being set by css.    
+    .on('mouseout', function(d) {  
+        d3.select(this)
+        .selectAll('.mark_bar')
+        .style("fill", null);
+    })
+
+
+
+
+
+// put the larger bars (ie hit shaoe) first
+
+gg_mark.append("rect")
+   .attr({
+    class : "hit_bar",
+    width : function(d) {return 300;},
+    height: "40",
+    // returns 10, 60, 110, 160
+    y : function(d, i) {return i*50 + 10;},
+    x : "30"
+   });
+
+gg_mark.append("rect")
+  .attr({
+    class : "mark_bar",
+    width : function(d) {return d;},
+    height: "40",
+    // returns 10, 60, 110, 160
+    y : function(d, i) {return i*50 + 10;},
+    x : "30"
+   });
+
+</script>	
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Load d3.js -->
+
+<!-- 
+<script src="https://d3js.org/d3.v5.js"></script>
+<script type="text/javascript" src="d3_v5_long.js"></script>  
+-->
+
+
+<style>
+  button {
+    margin-top: 30px;
+    margin-right: 20px;
+  }
+</style>
+
+
+<script src="https://d3js.org/d3.v5.min.js"></script>
+
+
+<!-- Also It is C:/ not C:// -->
+
+
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
+
+<button id="update_same_scale">Update Same Scale</button>
+<button id="update_big_scale">Update large Scale</button>
+
+
+
+<script>
+
+
+// https://bl.ocks.org/HarryStevens/7e3ec1a6722a153a5d102b6c42f4501d
+// https://www.d3-graph-gallery.com/graph/barplot_stacked_basicWide.html
+
+var arr_data = 
+[
+	{
+		"group": "<20",
+		"Women": 15,
+		"Men": 5
+	},
+	{
+		"group": "20 - 29",
+		"Women": 6,
+		"Men": 6
+	},
+	{
+		"group": "30 - 39",
+		"Women": 11,
+		"Men": 28
+	},
+	{
+		"group": "40 - 49",
+		"Women": 19,
+		"Men": 6
+  },
+  {
+		"group": "50 - 60",
+		"Women": 6,
+		"Men": 26
+  },
+  {
+		"group": "> 60",
+		"Women": 12,
+		"Men": 19
+	}
+];
+
+var new_arr_data = 
+[
+	{
+		"group": "<20",
+		"Women": 7,
+		"Men": 23
+	},
+	{
+		"group": "20 - 29",
+		"Women": 9,
+		"Men": 2
+	},
+	{
+		"group": "30 - 39",
+		"Women": 16,
+		"Men": 8
+	},
+	{
+		"group": "40 - 49",
+		"Women": 28,
+		"Men": 7
+  },
+  {
+		"group": "50 - 60",
+		"Women": 25,
+		"Men": 9
+  },
+  {
+		"group": "> 60",
+		"Women": 19,
+		"Men": 12
+	}
+];
+
+
+var arr_data_large = 
+[
+	{
+		"group": "<20",
+		"Women": 564,
+		"Men": 700
+	},
+	{
+		"group": "20 - 29",
+		"Women": 939,
+		"Men": 234
+	},
+	{
+		"group": "30 - 39",
+		"Women": 60,
+		"Men": 56
+	},
+	{
+		"group": "40 - 49",
+		"Women": 823,
+		"Men": 700
+  },
+  {
+		"group": "50 - 60",
+		"Women": 1200,
+		"Men": 945
+  },
+  {
+		"group": "> 60",
+		"Women": 345,
+		"Men": 450
+	}
+];
+
+
+var arr_data_large = 
+[
+	{
+		"group": "<20",
+		"Women": 62,
+		"Men": 91
+	},
+	{
+		"group": "20 - 29",
+		"Women": 1514,
+		"Men": 1857
+	},
+	{
+		"group": "30 - 39",
+		"Women": 1301,
+		"Men": 2040
+	},
+	{
+		"group": "40 - 49",
+		"Women": 1405,
+		"Men": 700
+  },
+  {
+		"group": "50 - 60",
+		"Women": 568,
+		"Men": 933
+  },
+  {
+		"group": "> 60",
+		"Women": 158,
+		"Men": 381
+	}
+];
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ==========================================================================  
+// THINGS THAT HAPPEN ONCE
+// ==========================================================================  
+
+  // dimensions
+  var int_width = 560;
+  var int_height = 370;
+  var margin_left = 40;
+  var margin_top = 0;
+
+  // shrink the bars in x pixels to allow for labels
+  var int_inset = 30;
+
+  // offset the labels from the end of  bar
+  var int_label_offset = 10;
+
+
+
+// append the svg to div and append group to svg
+  var svg = d3.select("#my_dataviz")
+  .append("svg")
+    .attr("width", int_width + margin_left)
+    .attr("height", int_height)
+      .append("g")
+      .attr("transform",
+      "translate(" + margin_left + "," + margin_top + ")");
+  
+  var arr_gender = ["Women", "Men"];
+  var stack = d3.stack().keys(arr_gender);
+
+  // color
+  var color = d3.scaleOrdinal()
+      .domain(arr_gender)
+      .range(['#e41a1c','#377eb8'])
+  // y scale
+  var y = d3.scaleBand()
+        .domain(["<20", "20 - 29", "30 - 39", "40 - 49", "50 - 60", "> 60"])
+        .range([0, int_height])
+        .paddingInner([0.2])
+        .paddingOuter([0]);
+  // y axis 
+  var sg_y_axis = svg.append("g")
+      .attr("transform", "translate(0," + "0" + ")")
+      .call(d3.axisLeft(y));
+      sg_y_axis.select(".domain").remove();
+// ==========================================================================  
+
+var arr_initial = [10, 20, 30, 40, 50, 60]
+
+// totalLabels is a "g" element
+var totalLabels = svg.append('g').attr('class', 'totals').attr('id', "totalLabels");
+
+
+// each one of these is a text element
+
+var text_elements = totalLabels.selectAll()
+    .data(arr_initial)
+    .enter()
+    .append('text')
+    .attr('id', function(d, i){ return "text-total-" + i; })
+    .style("font-size", "14px")
+
+// ==========================================================================  
+
+function fn_sub_g_draw(lcl_data) {
+  var max_value = d3.max(lcl_data.map(function(q)  {return(q.Women + q.Men);}));
+  var x = d3.scaleLinear().domain([0, max_value]).range([0, int_width - int_inset]);
+  
+  arr_gender.forEach(function(key, key_index){   
+    
+    var bar = svg.selectAll(".bar-" + key)
+      .data(stack(lcl_data)[key_index], 
+      function(d){ return d.data.group + "-" + key; });
+    
+    bar
+      .transition().duration(100)
+        .attr("y", function(d){ return y(d.data.group); })
+        .attr("x", function(d){ return x(d[0]);})
+        .attr("width", function(d){ return x(d[1]) - x(d[0]);});
+    
+    bar
+      .enter()
+      .append("rect")
+        .attr("class", function(d){ return "bar bar-" + key; })
+        .attr("y", function(d){ return y(d.data.group);})
+        .attr("x", function(d){ return x(d[0]);})
+        .attr("height", y.bandwidth())
+        .attr("width", function(d){ return x(d[1]) - x(d[0]); })
+        .attr("fill", function(d){ return color(key); })
+  }); //for.each
+
+
+  var group_totals = d3.nest()
+    .key(function(d) {return d.group;})
+    .rollup(function(d) {return d3.sum(d, function(g) {return g.Women + g.Men;});})
+    .entries(lcl_data);
+
+	text_elements
+		.each(function(d, i){
+			d3.select(this)
+				.text(group_totals[i].value)
+				.attr("y", y(group_totals[i].key) + (y.bandwidth() / 2))
+				.attr("x", x(group_totals[i].value) +  int_label_offset);
+			}); // each
+
+} // fn_sub_g_draw
+
+
+
+fn_sub_g_draw(new_arr_data);
+
+function fn_update_same_scale() {fn_sub_g_draw(arr_data);}
+d3.select('#update_same_scale').on("click", fn_update_same_scale);
+
+function fn_update_big_scale() {fn_sub_g_draw(arr_data_large);}
+d3.select('#update_big_scale').on("click", fn_update_big_scale);
+
+</script>
