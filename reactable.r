@@ -36,6 +36,9 @@ reactable(
 
 library(htmltools)
 
+data <- read.csv("https://glin.github.io/reactable/articles/twitter-followers/twitter_followers.csv",
+                 stringsAsFactors = FALSE)
+
 # Render a bar chart with a label on the left
 bar_chart <- function(label, width = "100%", height = "14px", fill = "#00bfc4", background = NULL) {
   bar <- div(style = list(background = fill, width = width, height = height))
@@ -52,31 +55,36 @@ reactable(
       name = "Account",
       format = colFormat(prefix = "@")
     ),
+    
     followers = colDef(
       name = "Followers",
       defaultSortOrder = "desc",
+      align = "left",
       # Render the bar charts using a custom cell render function
       cell = function(value) {
         width <- paste0(value * 100 / max(data$followers), "%")
-        # Add thousands separators
         value <- format(value, big.mark = ",")
         bar_chart(value, width = width, fill = "#3fc1c9")
-      },
+      }
       # And left-align the columns
-      align = "left"
     ),
+    
     exclusive_followers_pct = colDef(
       name = "Exclusive Followers",
       defaultSortOrder = "desc",
+      align = "left",
       # Render the bar charts using a custom cell render function
+      
       cell = function(value) {
         # Format as percentages with 1 decimal place
         value <- paste0(format(value * 100, nsmall = 1), "%")
         bar_chart(value, width = value, fill = "#fc5185", background = "#e1e1e1")
-      },
+      }
+      
       # And left-align the columns
-      align = "left"
-    )
+     
+    ) 
+# ====================
   )
 )
 
@@ -100,7 +108,9 @@ reactable(
   defaultColDef = colDef(footerStyle = list(fontWeight = "bold"))
 )
 
-
+# ================================================================================================
+# ================================================================================================
+# ================================================================================================
 
 setwd("/Users/zurich/Documents/dg_the_grid")
 df_data_flat <- read.csv("sector_data_flat.csv")
@@ -114,15 +124,53 @@ int_actual_total <- -3264579
 df_data_flat$difference %>% sum() == int_actual_total
 
 
+# options(scipen = 999)
+# Render a bar chart with a label on the left
+fn_bar_chart <- function(label, width = "100%", height = "14px", 
+                         fill = "#00bfc4", background = NULL) {
+  
+  bar <- div(style = list(background = fill, width = width, height = height))
+  
+  chart <- div(style = list(flexGrow = 1, marginLeft = "6px", background = background), bar)
+  
+  div(style = list(display = "flex", alignItems = "center"), label, chart)
+}
 
-rct_cd_code <- reactable::colDef(name = "Code")
+
+
+
+rct_cd_code <- reactable::colDef(name = "Code", footer = "Total:")
 rct_cd_sector <- reactable::colDef(name = "Sector")
 
+
+
+
+
+fn_fmt_tot <- function(v) sum(v) %>% prettyNum(big.mark=",") 
+
 rct_comma_fmt <- reactable::colFormat(separators = TRUE)
-rct_cd_diff <- reactable::colDef(name = "Difference", format = rct_comma_fmt)
+
+rct_cd_diff <- reactable::colDef(name = "Difference",
+                                 align = "left",
+                                 format = rct_comma_fmt,
+                                 footer = fn_fmt_tot,
+
+cell = function(value) {
+  width <- paste0(value * 100 / min(df_data_flat$difference), "%")
+  value <- format(value, big.mark = ",")
+  fn_bar_chart(value, width = width, fill = "#3fc1c9")
+})
+
+
+
+
 
 rct_pc_fmt <- reactable::colFormat(percent = TRUE, digits = 1)
 rct_cd_pc_diff <- reactable::colDef(name = "% Difference", format = rct_pc_fmt)
+
+
+# add total
+# add column
 
 
 reactable(
@@ -134,8 +182,13 @@ reactable(
     sector = rct_cd_sector,
     difference = rct_cd_diff,
     percent_diff = rct_cd_pc_diff
-  ) # list
+  ), # list
+  defaultColDef = colDef(footerStyle = list(fontWeight = "bold"))
 )
+
+
+
+
 
 
 

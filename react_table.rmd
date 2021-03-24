@@ -1,0 +1,100 @@
+---
+title: "Untitled"
+output: 
+  html_document:
+    css:  "styles.css"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(reactable)
+library(dplyr)
+library(htmltools)
+```
+
+## R Markdown
+
+```{r test_reactable, echo = FALSE}
+
+
+setwd("/Users/zurich/Documents/dg_the_grid")
+df_data_flat <- read.csv("sector_data_flat.csv")
+names(df_data_flat) <- c("code", "sector", "difference", "percent_diff")
+
+df_add <- data.frame(code = "Z", sector = "Other", difference = -1671, percent_diff = -.402)
+df_data_flat <- rbind(df_data_flat, df_add)
+
+
+int_actual_total <- -3264579
+# df_data_flat$difference %>% sum() == int_actual_total
+
+
+# options(scipen = 999)
+# Render a bar chart with a label on the left
+fn_bar_chart <- function(label, width = "100%", height = "14px", 
+                         fill = "#00bfc4", background = NULL) {
+  
+  bar <- htmltools::div(style = list(background = fill, 
+                    width = width, height = height))
+  
+  chart <- htmltools::div(style = list(flexGrow = 1, marginLeft = "6px", 
+                    background = background), bar)
+  
+  div(style = list(display = "flex", alignItems = "center"), label, chart)
+}
+
+
+
+
+rct_cd_code <- reactable::colDef(name = "Code", footer = "Total:")
+rct_cd_sector <- reactable::colDef(name = "Sector")
+
+
+
+
+
+fn_fmt_tot <- function(v) sum(v) %>% prettyNum(big.mark=",") 
+
+rct_comma_fmt <- reactable::colFormat(separators = TRUE)
+
+rct_cd_diff <- reactable::colDef(name = "Difference",
+                                 align = "left",
+                                 format = rct_comma_fmt,
+                                 footer = fn_fmt_tot,
+cell = function(value) {
+  width <- paste0(value * 100 / min(df_data_flat$difference), "%")
+  value <- format(value, big.mark = ",")
+  fn_bar_chart(value, width = width, fill = "#3fc1c9")
+})
+
+
+
+
+
+rct_pc_fmt <- reactable::colFormat(percent = TRUE, digits = 1)
+rct_cd_pc_diff <- reactable::colDef(name = "% Difference", format = rct_pc_fmt)
+
+
+# add total
+# add column
+
+
+reactable(
+  df_data_flat,
+  defaultPageSize = nrow(df_data_flat),
+  defaultSorted = "code",
+  columns = list( 
+    code = rct_cd_code,
+    sector = rct_cd_sector,
+    difference = rct_cd_diff,
+    percent_diff = rct_cd_pc_diff
+  ), # list
+  defaultColDef = colDef(footerStyle = list(fontWeight = "bold"))
+)
+
+```
+
+
+
+
+
