@@ -1,0 +1,9 @@
+.car-specs .number {
+  font-family: "Courier New", Courier, monospace;
+  white-space: pre;
+}
+
+.car-specs .units {
+  display: inline-block;
+  width: 65px;
+}

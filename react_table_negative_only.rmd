@@ -22,12 +22,19 @@ library(htmltools)
 fn_bar_chart_neg <- function(label, value, max_value = min(vct_vals), height = "16px",
                               pos_fill = "#005ab5", neg_fill = "#dc3220") {
   
-  chart_wrapper <- div(style = list(flex = "1 1 0"))
- # pos_chart <- div(style = list(flex = "1 1 0"))
-  width <- paste0(abs(value / max_value) * 100, "%")
-  bar <- div(style = list(marginRight = "8px", background = neg_fill, width = width, height = height))
-  chart <- div(style = list(display = "flex", alignItems = "center", justifyContent = "flex-end"), bar, label)
-  fin_chart <- tagAppendChild(chart_wrapper, chart)
+  width_property <- paste0(abs(value / max_value) * 100, "%")
+  
+  # row div
+  div_row <- div(style = list(flex = "1 1 0"), class = "div_row")
+
+  div_bar <- div(style = list(marginRight = "8px", background = neg_fill, width = width_property, height = height))
+  
+  div_text <- div(class = "mark_text", label)
+  
+  div_chart <- div(style = list(display = "flex", alignItems = "center", justifyContent = "flex-end"), div_bar, label)
+  
+  # append div_chart to be immediate child of div_row
+  fin_chart <- tagAppendChild(div_row, div_chart)
 
 } # bar_chart_neg
 
@@ -39,7 +46,7 @@ data <- data.frame(
   company = sprintf("Company%02d", 1:10),
   profit_chg = vct_vals
 )
-
+data
 
 
 reactable(data, bordered = TRUE, columns = list(
@@ -48,6 +55,7 @@ reactable(data, bordered = TRUE, columns = list(
     name = "Change in Profit",
     defaultSortOrder = "desc",
     cell = function(value) {
+      # label is the value, formatted with commas
       label <- prettyNum(value, big.mark=",") 
       fn_bar_chart_neg(label, value)
     },

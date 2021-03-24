@@ -1,0 +1,44 @@
+---
+title: "Untitled"
+output: 
+  html_document:
+    css:  "styles.css"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(reactable)
+library(dplyr)
+library(htmltools)
+```
+
+## R Markdown
+
+```{r test_reactable, echo = FALSE}
+
+data <- MASS::Cars93[40:44, c("Make", "Length", "Luggage.room")]
+
+reactable(data, class = "car-specs", columns = list(
+  # Align values using white space (and a monospaced font)
+  Length = colDef(
+    cell = JS("function(cellInfo) {
+      var units = cellInfo.viewIndex === 0 ? '\u2033' : ' '
+      return cellInfo.value + units
+    }"),
+    class = "number"
+  ),
+  # Align values using a fixed-width container for units
+  Luggage.room = colDef(
+    name = "Luggage Room",
+    cell = reactable::JS("function(cellInfo) {return cellInfo.value + '<div class=\"units\">' + '' + '</div>'}"),
+    html = TRUE
+  )
+))
+
+
+```
+
+
+
+
+
