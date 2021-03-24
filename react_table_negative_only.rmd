@@ -1,0 +1,64 @@
+---
+title: "Untitled"
+output: 
+  html_document:
+    css:  "styles.css"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(reactable)
+library(dplyr)
+library(htmltools)
+```
+
+## R Markdown
+
+```{r test_reactable, echo = FALSE}
+
+
+# Render a bar chart with positive and negative values
+# second value defines the range
+fn_bar_chart_neg <- function(label, value, max_value = min(vct_vals), height = "16px",
+                              pos_fill = "#005ab5", neg_fill = "#dc3220") {
+  
+  chart_wrapper <- div(style = list(flex = "1 1 0"))
+ # pos_chart <- div(style = list(flex = "1 1 0"))
+  width <- paste0(abs(value / max_value) * 100, "%")
+  bar <- div(style = list(marginRight = "8px", background = neg_fill, width = width, height = height))
+  chart <- div(style = list(display = "flex", alignItems = "center", justifyContent = "flex-end"), bar, label)
+  fin_chart <- tagAppendChild(chart_wrapper, chart)
+
+} # bar_chart_neg
+
+
+vct_vals <- c(-131132, -390648, -52840, -201904, -119655, -324354, -89650, -54570, -67930, -300158)
+
+
+data <- data.frame(
+  company = sprintf("Company%02d", 1:10),
+  profit_chg = vct_vals
+)
+
+
+
+reactable(data, bordered = TRUE, columns = list(
+  company = colDef(name = "Company", minWidth = 100),
+  profit_chg = colDef(
+    name = "Change in Profit",
+    defaultSortOrder = "desc",
+    cell = function(value) {
+      label <- prettyNum(value, big.mark=",") 
+      fn_bar_chart_neg(label, value)
+    },
+    align = "center",
+    minWidth = 400
+  )
+))
+
+```
+
+
+
+
+
