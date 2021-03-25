@@ -1,8 +1,30 @@
-
+library(htmltools)
+library(dplyr)
 
 myTag <- div(class = "parent", "contents of div")
 otherTag <- span("contents of span")
 myTag <- tagAppendChild(myTag, otherTag)
+
+myTag
+
+
+str_label <- "483,292"
+div_row <- div(class = "div_row")
+div_chart <- div(class = "div_chart")
+div_bar <- div(class = "div_bar")
+div_text <- div(class = "mark_text", str_label)
+
+# append TWO child elements to div chart
+nde_chart <- tagAppendChild(div_chart, div_bar) %>% tagAppendChild(div_text)
+
+nde_row <- tagAppendChild(div_row, nde_chart)
+
+nde_row
+
+
+
+
+
 
 myTag
 

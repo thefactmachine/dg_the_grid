@@ -22,7 +22,7 @@ library(htmltools)
 fn_bar_chart_neg <- function(str_label, value, max_value = min(vct_vals), height = "16px",
                               pos_fill = "#005ab5", neg_fill = "#dc3220") {
   
-  flt_width <- abs(value / max_value) * 90
+  flt_width <- abs(value / max_value) * 80
   width_property <- paste0(flt_width, "%")
   
   # row div
@@ -52,7 +52,7 @@ data <- data.frame(
 )
 
 
-reactable(data, bordered = FALSE, columns = list(
+mark <- reactable(data, bordered = FALSE, columns = list(
   company = colDef(name = "Company", width = 100),
   profit_chg = colDef(
     name = "Change in Profit",
@@ -63,9 +63,11 @@ reactable(data, bordered = FALSE, columns = list(
       fn_bar_chart_neg(label, value)
     },
     align = "right",
-    width = 400
+    width = 500
   )
 ))
+
+mark
 
 ```
 

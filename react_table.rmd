@@ -17,7 +17,8 @@ library(htmltools)
 ```{r test_reactable, echo = FALSE}
 
 
-setwd("/Users/zurich/Documents/dg_the_grid")
+
+setwd("/Users/markthekoala/Documents/d3_examples/r_markdown_examples")
 df_data_flat <- read.csv("sector_data_flat.csv")
 names(df_data_flat) <- c("code", "sector", "difference", "percent_diff")
 
@@ -25,74 +26,133 @@ df_add <- data.frame(code = "Z", sector = "Other", difference = -1671, percent_d
 df_data_flat <- rbind(df_data_flat, df_add)
 
 
-int_actual_total <- -3264579
-# df_data_flat$difference %>% sum() == int_actual_total
+df_data_flat$sector <- paste0("[", df_data_flat$code, "]", " ", df_data_flat$sector)
+df_data_flat$code <- NULL
+
+# ===========================================================================
+# globals for graphs
+str_right_margin <- "6px"
 
 
-# options(scipen = 999)
-# Render a bar chart with a label on the left
-fn_bar_chart <- function(label, width = "100%", height = "14px", 
-                         fill = "#00bfc4", background = NULL) {
+# ============================================================================
+
+fn_bar_chart_difference <- function(str_label, flt_value) {
   
-  bar <- htmltools::div(style = list(background = fill, 
-                    width = width, height = height))
+  # define graph variables
+  max_value = min(df_data_flat$difference)
+  height = "16px"
   
-  chart <- htmltools::div(style = list(flexGrow = 1, marginLeft = "6px", 
-                    background = background), bar)
+  flt_width <- abs(flt_value / max_value) * 80
+  width_property <- paste0(flt_width, "%")
   
-  div(style = list(display = "flex", alignItems = "center"), label, chart)
-}
+  str_fill <- "#e41a1c"
+  
+  # row div
+  div_row <- div(style = list(flex = "1 1 0"))
+
+  div_bar <- div(style = list(marginRight = str_right_margin, background = str_fill, 
+                              width = width_property, height = height))
+  
+  div_text <- div(style = list(width = "60px", textAlign = "right"), str_label)
+  
+  node_chart <- div(style = list(display = "flex", 
+          alignItems = "center", justifyContent = "flex-end"))
+ 
+  nde_comp <- tagAppendChild(node_chart, div_bar) %>% tagAppendChild(div_text)
+  
+  nde_fin <- tagAppendChild(div_row, nde_comp)
+  
+  return(nde_fin)
+
+} # bar_chart_neg
 
 
 
+fn_bar_chart_pc_difference <- function(str_label, flt_value) {
+  
+  # define graph variables
+  max_value = min(df_data_flat$percent_diff)
+  height = "16px"
+  
+  flt_width <- abs(flt_value / max_value) * 80
+  width_property <- paste0(flt_width, "%")
+  
+  str_fill <- "#ff7f00"
+  
+  # row div
+  div_row <- div(style = list(flex = "1 1 0"))
 
-rct_cd_code <- reactable::colDef(name = "Code", footer = "Total:")
-rct_cd_sector <- reactable::colDef(name = "Sector")
+  div_bar <- div(style = list(marginRight = str_right_margin, background = str_fill, 
+                              width = width_property, height = height))
+  
+  div_text <- div(style = list(width = "55px", textAlign = "right"), str_label)
+  
+  node_chart <- div(style = list(display = "flex", 
+          alignItems = "center", justifyContent = "flex-end"))
+ 
+  nde_comp <- tagAppendChild(node_chart, div_bar) %>% tagAppendChild(div_text)
+  
+  nde_fin <- tagAppendChild(div_row, nde_comp)
+  
+  return(nde_fin)
 
-
-
-
-
-fn_fmt_tot <- function(v) sum(v) %>% prettyNum(big.mark=",") 
-
-rct_comma_fmt <- reactable::colFormat(separators = TRUE)
-
-rct_cd_diff <- reactable::colDef(name = "Difference",
-                                 align = "left",
-                                 format = rct_comma_fmt,
-                                 footer = fn_fmt_tot,
-cell = function(value) {
-  width <- paste0(value * 100 / min(df_data_flat$difference), "%")
-  value <- format(value, big.mark = ",")
-  fn_bar_chart(value, width = width, fill = "#3fc1c9")
-})
-
-
-
-
-
-rct_pc_fmt <- reactable::colFormat(percent = TRUE, digits = 1)
-rct_cd_pc_diff <- reactable::colDef(name = "% Difference", format = rct_pc_fmt)
-
-
-# add total
-# add column
+} # bar_chart_neg
 
 
-reactable(
-  df_data_flat,
-  defaultPageSize = nrow(df_data_flat),
-  defaultSorted = "code",
-  columns = list( 
-    code = rct_cd_code,
-    sector = rct_cd_sector,
-    difference = rct_cd_diff,
-    percent_diff = rct_cd_pc_diff
-  ), # list
-  defaultColDef = colDef(footerStyle = list(fontWeight = "bold"))
-)
+# ===================================================================
+# column definitions
+
+int_bar_chart_width <- 320
+
+# 1) sector name
+rct_cd_sekta <- reactable::colDef(name = "Sector", footer = "Total job decrease:", width = 260)
+
+# 2) job difference
+rct_cd_difference <- 
+  reactable::colDef(
+    name = "Job decrease", 
+    width = int_bar_chart_width, 
+    align = "right", 
+    footer = function(values) prettyNum(sum(values) , big.mark=","),
+    cell = function(value) { 
+    label <- prettyNum(value, big.mark=",")
+    fn_bar_chart_difference(label, value)
+    })
+
+
+# 3) percentage difference
+rct_cd_pc_difference <- 
+  reactable::colDef(name = "Percentage difference", width = int_bar_chart_width, align = "right", 
+  cell = function(value) { 
+    label <- paste0(format(value * 100, nsmall = 1), "%")
+    fn_bar_chart_pc_difference(label, value)
+  })
+
+# smash column definitions together
+lst_cols <- list(sector = rct_cd_sekta, difference = rct_cd_difference, 
+                 percent_diff = rct_cd_pc_difference)
+
+reactable(df_data_flat, 
+          defaultPageSize = nrow(df_data_flat),
+          striped = TRUE,
+          highlight = TRUE,
+          bordered = FALSE, 
+          columns = lst_cols,
+          defaultColDef = colDef(footerStyle = list(fontWeight = "bold"))
+) # reactable
+
+
+# to do:
+# Total
+# fonts
+# width calculation
+# striped https://glin.github.io/reactable/articles/examples.html#basic-usage-1
+
+
 
 ```
+
+
 
 
 
