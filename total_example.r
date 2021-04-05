@@ -13,3 +13,7 @@ reactable(
   ),
   defaultColDef = colDef(footerStyle = list(fontWeight = "bold"))
 )
+
+
+# 174 words took 76 seconds
+

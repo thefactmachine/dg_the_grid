@@ -1,4 +1,4 @@
-library(htmltools)
+library(htmltools) 
 library(dplyr)
 
 myTag <- div(class = "parent", "contents of div")
@@ -22,9 +22,9 @@ nde_row <- tagAppendChild(div_row, nde_chart)
 nde_row
 
 
-
-
-
+million <- 1e6
+billion <- million * 1000
+billion_20 <- billion * 20
 
 myTag
 
