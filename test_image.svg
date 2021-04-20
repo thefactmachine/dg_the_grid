@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 1341 520" style="enable-background:new 0 0 1341 520;" xml:space="preserve">
+  <style type="text/css">
+
+.st0{fill:#2E7CB6;}
+.st1{fill:#56B070;}
+.st2{fill:#0033CC;}
+.st3{fill:#1D354C;}
+.st4{font-family:'Helvetica-Light';}
+.st5{font-size:22px;}
+.st6{font-family:'Helvetica';}
+.st7{font-size:25px;}
+.st8{fill:#FFFFFF;stroke:#000000;stroke-miterlimit:10;}
+.st9{fill:#FFFFFF;stroke:#000000;stroke-width:2;stroke-miterlimit:10;}
+.st10{fill:#DDDDDD;}
+
+</style>
+  <g id="main_venn_diagram">
+    <circle id="main_start_circle" class="st1" cx="244.8" cy="262.8" r="239.2"/>
+    <circle id="main_end_circle" class="st0" cx="392.2" cy="262.8" r="239.2"/>
+    <path id="main_intersection" class="st2" d="M484,262.8c0,106.4-69.5,196.5-165.5,227.6C222.5,459.3,153,369.2,153,262.8S222.5,66.3,318.5,35.2C414.5,66.3,484,156.4,484,262.8z"/>
+  </g>
+  <g id="legend">
+    <path id="legend_intersection" class="st3" d="M726.9,230c-9.2,2.5-16,11-16,21c0,9.3,5.9,17.3,14.1,20.4c9.2-2.5,16-11,16-21C741.1,241.1,735.2,233.1,726.9,230z"/>
+    <circle id="legend_start_circle" class="st1" cx="724.3" cy="115" r="20"/>
+    <circle id="legend_end_circle" class="st0" cx="755.3" cy="185" r="20"/>
+    <path id="legend_end_only" class="st0" d="M741.2,438.2c-2.3,0-4.5,0.3-6.5,0.9c8.9,3.1,15.4,11.6,15.4,21.5c0,10.3-6.9,19-16.3,21.8c2.3,0.8,4.8,1.2,7.4,1.2c12.6,0,22.8-10.2,22.8-22.8S753.7,438.2,741.2,438.2z"/>
+    <path id="legend_start_only" class="st1" d="M721.5,398.7c0-9.5,5.1-17.5,12.1-20.1c-1.7-0.7-3.6-1.1-5.5-1.1c-9.3,0-16.9,9.4-16.9,21s7.6,21,16.9,21c1.7,0,3.3-0.3,4.8-0.9C726.3,415.7,721.5,407.9,721.5,398.7z"/>
+  </g>
+  <rect class="st10" x="801" y="373" width="392" height="40"/>
+  <text transform="matrix(1 0 0 1 821.5898 120.223)" class="st4 st5">Start</text>
+  <text transform="matrix(1 0 0 1 821.5898 189.481)" class="st4 st5">Finish</text>
+  <text transform="matrix(1 0 0 1 821.5898 255.12)" class="st4 st5">Start and finish</text>
+  <text transform="matrix(1 0 0 1 821.5898 402.499)" class="st4 st5">Start only</text>
+  <text transform="matrix(1 0 0 1 821.5898 466.626)" class="st4 st5">Finish only</text>
+  <text text-anchor="end" transform="matrix(1 0 0 1 1180 120.223)" class="st4 st5">11,496,977</text>
+  <text text-anchor="end" transform="matrix(1 0 0 1 1180 189.481)" class="st4 st5">12,337,477</text>
+  <text text-anchor="end" transform="matrix(1 0 0 1 1180 255.12)" class="st4 st5">8,232,398</text>
+  <text text-anchor="end" transform="matrix(1 0 0 1 1180 402.499)" class="st4 st5">3,264,579</text>
+  <text text-anchor="end" transform="matrix(1 0 0 1 1180 466.626)" class="st4 st5">4,105,079</text>
+  <text transform="matrix(1 0 0 1 821.5898 72.223)" class="st6 st7">Cohort</text>
+  <text transform="matrix(1 0 0 1 1126.912 72.223)" class="st6 st7">Jobs</text>
+  <line class="st8" x1="822.5" y1="40.2" x2="1185.4" y2="40.2"/>
+  <line class="st9" x1="822.5" y1="84.6" x2="1185.4" y2="84.6"/>
+</svg>
